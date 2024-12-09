@@ -1,0 +1,16 @@
+node_modules
+build
+.vscode
+src/Infrastructure/Utils/voices
+package-lock.json
+config/production.json
+logs/execution.json
+docker-compose-fam.yml
+config/development.json
+Makefile
+.aider.tags.cache.v3/
+.aider.chat.history.md
+.aider.input.history
+docker-compose-locally.yml
+domain-old.drawio
+domain-single.drawio

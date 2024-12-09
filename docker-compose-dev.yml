@@ -1,0 +1,65 @@
+version: '3.9'
+services:
+
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    env_file: .env
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      llmommy-network:
+        ipv4_address: 10.2.0.2
+    ports:
+      - "27018:27017"
+
+  llmommy:
+    container_name: llmommy
+    image: 'llmommy'
+    depends_on:
+      - mongo
+      - vllm
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - llmommy-data:/usr/src/app
+    networks:
+      llmommy-network:
+        ipv4_address: 10.2.0.4
+    ports:
+      - '3001:3000'
+
+  vllm:
+    container_name: vllm
+    image: vllm/vllm-openai:latest
+    env_file: .env
+    command: >
+      --api-key ${AI_ASSISTANT_OPEN_AI_KEY} --model ${AI_ASSISTANT_OPEN_AI_MODEL} --gpu_memory_utilization ${GPU_USAGE} --max_model_len ${CONTEXT_WINDOW_LENGTH}
+    ipc: "host"
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    volumes:
+      - vllm-data:/root/.cache/huggingface
+    networks:
+      llmommy-network:
+        ipv4_address: 10.2.0.3
+    ports:
+      - "0.0.0.0:8100:8000"
+volumes:
+  mongo-data:
+  llmommy-data:
+  vllm-data:
+
+networks:
+  llmommy-network:
+    ipam:
+      config:
+        - subnet: 10.2.0.0/24
