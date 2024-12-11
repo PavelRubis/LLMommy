@@ -1,6 +1,6 @@
 import { Configuration } from './Configuration.js';
 import OpenAISpeechToTextConverter from '../Implementations/OpenAISpeechToTextConverter.js';
-import OpenAIAssistant from '../Implementations/OpenAIAssistant.js';
+import OpenAICompletionLLM from '../Implementations/OpenAICompletionLLM.js';
 
 const AI_ASSISTANT_TYPES = {
     OPEN_AI: 'open-ai',
@@ -12,7 +12,7 @@ const SPEECH_TO_TEXT_CONVERTERS_TYPES = {
 };
 
 export default class DependencyResolver {
-    static resolveAssistant() {
+    static resolveCompletionLLM() {
         switch (Configuration.get('AI_ASSISTANT_TYPE')) {
             case AI_ASSISTANT_TYPES.OPEN_AI: {
                 const basePath = Configuration.get('AI_ASSISTANT_OPEN_AI_URI');
@@ -21,7 +21,7 @@ export default class DependencyResolver {
                 if (typeof apiKey !== 'string' || !apiKey.length) {
                     throw new Error('Open AI API key not provided.');
                 }
-                return new OpenAIAssistant(basePath, apiKey, modelName);
+                return new OpenAICompletionLLM(basePath, apiKey, modelName);
             }
             default:
                 throw new Error('AI assistant not configured.');

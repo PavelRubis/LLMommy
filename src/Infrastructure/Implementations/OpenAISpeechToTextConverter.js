@@ -2,9 +2,9 @@ import { createReadStream } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { Configuration, OpenAIApi } from 'openai';
 import OggConverter from '../Utils/OggConverter.js';
-import SpeechToTextConverterBase from '../../Contracts/SpeechToTextConverterBase.js';
+import BaseSpeechToTextConverter from '../../Contracts/BaseSpeechToTextConverter.js';
 
-export default class OpenAISpeechToTextConverter extends SpeechToTextConverterBase {
+export default class OpenAISpeechToTextConverter extends BaseSpeechToTextConverter {
     #openaiClient;
     #oggConverter;
 
@@ -18,7 +18,7 @@ export default class OpenAISpeechToTextConverter extends SpeechToTextConverterBa
         );
     }
 
-    async getTranscription(fileUrl) {
+    async createFileTranscription(fileUrl) {
         try {
             const tempFileName = uuidv4();
             const oggPath = await this.#oggConverter.download(fileUrl, tempFileName);

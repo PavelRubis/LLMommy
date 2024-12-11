@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai';
-import AiAssistantBase from '../../Contracts/AiAssistantBase.js';
+import BaseCompletionLLM from '../../Contracts/BaseCompletionLLM.js';
 
-export default class OpenAIAssistant extends AiAssistantBase {
+export default class OpenAICompletionLLM extends BaseCompletionLLM {
     #MODEL_NAMES = ['MTSAIR/Cotype-Nano', 'gpt-4o-2024-11-20', 'gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'];
     #RESERVE_MODEL_NAMES = ['MTSAIR/Cotype-Nano', 'gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'];
     #DEFAULT_MODEL_NAME = 'gpt-4o-2024-11-20';
@@ -15,7 +15,7 @@ export default class OpenAIAssistant extends AiAssistantBase {
         this.#createClient(basePath, apiKey);
     }
 
-    async chat(contextMessages = [], user) {
+    async createChatCompletion(contextMessages = [], user) {
         let requestModelName = this.#currentModelName;
         for (let requestTry = 0; requestTry < this.#RESERVE_MODEL_NAMES.length; requestTry++) {
             try {
@@ -29,13 +29,6 @@ export default class OpenAIAssistant extends AiAssistantBase {
             }
         }
         throw new Error('Too many requests to all available OpenAI models.', { type: 'ToManyRequests' });
-    }
-
-    formatTextForContext(content, role = 'user') {
-        return {
-            content,
-            role
-        };
     }
 
     async #createChatCompletion(contextMessages = [], modelName, user) {

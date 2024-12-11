@@ -9,7 +9,11 @@ export default class ConversationRepository {
         }).save();
     }
 
-    async getConversations(userId) {
+    async getConversationsForUser(userId) {
         return await ConversationModel.find({ userId });
+    }
+
+    async getConversation(conversationld) {
+        return await ConversationModel.findById(conversationld);
     }
 }
