@@ -14,3 +14,7 @@ Makefile
 docker-compose-locally.yml
 domain-old.drawio
 domain-single.drawio
+my-docker-compose-local.yml
+my-docker-compose-remote.yml
+my-local.env
+my-remote.env

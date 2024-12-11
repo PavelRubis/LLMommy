@@ -1,0 +1,41 @@
+services:
+
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    env_file: .env
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      llmommy-network:
+        ipv4_address: 10.2.0.2
+    ports:
+      - "27018:27017"
+
+  llmommy:
+    container_name: llmommy
+    image: 'llmommy'
+    depends_on:
+      - mongo
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - llmommy-data:/usr/src/app
+    networks:
+      llmommy-network:
+        ipv4_address: 10.2.0.4
+    ports:
+      - '3001:3000'
+
+volumes:
+  mongo-data:
+  llmommy-data:
+
+
+networks:
+  llmommy-network:
+    ipam:
+      config:
+        - subnet: 10.2.0.0/24
