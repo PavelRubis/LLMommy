@@ -6,10 +6,10 @@ import UserRepository from './Infrastructure/Repositories/UserRepository.js';
 import ConversationRepository from './Infrastructure/Repositories/ConversationRepository.js';
 import LLMommy from './LLMommy.js';
 import DependencyResolver from './Infrastructure/Utils/DependencyResolver.js';
-import EventEmitter from 'node:events';
+import AsyncEventEmitter from './Infrastructure/Utils/AsyncEventEmitter.js';
 
 class Program {
-    static #eventEmitter = new EventEmitter();
+    static #eventEmitter = new AsyncEventEmitter();
 
     static async start() {
         try {

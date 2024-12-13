@@ -43,24 +43,24 @@ export default class TelegramBot {
         this.#bot.use(this.sessionNormalizationMiddleware.bind(this));
         this.#bot.catch(this.onError.bind(this));
 
-        this.#bot.command('new', async ctx => await this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.GRETING_TEXT));
+        this.#bot.command('new', ctx => this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.GRETING_TEXT));
 
-        this.#bot.command('start', async ctx => await this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.SWEET_GRETING_TEXT));
+        this.#bot.command('start', ctx => this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.SWEET_GRETING_TEXT));
 
-        this.#bot.command('history', async ctx => await this.executeCommand(ctx, this.onHistoryCommand.bind(this)));
+        this.#bot.command('history', ctx => this.executeCommand(ctx, this.onHistoryCommand.bind(this)));
 
-        this.#bot.on(message('text'), async ctx => await this.executeCommand(ctx, this.onTextMessage.bind(this)));
+        this.#bot.on(message('text'), ctx => this.executeCommand(ctx, this.onTextMessage.bind(this)));
 
-        this.#bot.on(message('voice'), async ctx => await this.executeCommand(ctx, this.onVoiceMessage.bind(this)));
+        this.#bot.on(message('voice'), ctx => this.executeCommand(ctx, this.onVoiceMessage.bind(this)));
 
-        this.#bot.on('callback_query', async ctx => await this.executeCommand(ctx, this.onCallbackQuery.bind(this)));
+        this.#bot.on('callback_query', ctx => this.executeCommand(ctx, this.onCallbackQuery.bind(this)));
     }
 
     start() {
         this.#bot.launch();
     }
 
-    async executeCommand(ctx, commandHandler, params) {
+    executeCommand(ctx, commandHandler, params) {
         const dataObj = typeof ctx?.callbackQuery === 'object' && ctx?.callbackQuery !== null ? ctx?.callbackQuery : ctx?.message;
         if (
             this.#allowedUsersIds?.includes(dataObj?.from?.id?.toString()) ||
@@ -68,23 +68,23 @@ export default class TelegramBot {
             this.#allowedUsersIds === 'any' ||
             this.#allowedUserNames === 'any'
         ) {
-            await commandHandler(ctx, params);
+            commandHandler(ctx, params);
         } else {
             Logger.warn(dataObj, 'Received message from unknown user...');
         }
     }
 
-    async onStart(ctx, message) {
+    onStart(ctx, message) {
         try {
             ctx.session = this.getEmptySession();
-            await this.#reply(ctx, message);
+            this.#reply(ctx, message);
         } catch (e) {
             Logger.error(e, `Error while proccessing text message`);
             this.#reply(ctx, 'Ошибка при обработке сообщения. `', e.message + '`');
         }
     }
 
-    async onTextMessage(ctx) {
+    onTextMessage(ctx) {
         try {
             const text = ctx.message.text;
             if (typeof text !== 'string' && !ctx.message.text.trim()) {
@@ -108,7 +108,7 @@ export default class TelegramBot {
         }
     }
 
-    async onTextMessageResponse(mommyResponse) {
+    onTextMessageResponse(mommyResponse) {
         const ctx = mommyResponse.ctx;
         try {
             const text = ctx.message.text;
@@ -116,7 +116,7 @@ export default class TelegramBot {
                 return;
             }
             ctx.session.messages = mommyResponse.newContextMessages.slice();
-            await this.#replyWithSaveButton(ctx, mommyResponse.completionResponse.content);
+            this.#replyWithSaveButton(ctx, mommyResponse.completionResponse.content);
         } catch (e) {
             Logger.error(e, `Error while proccessing text message`);
             this.#reply(ctx, 'Ошибка при обработке сообщения. `', e.message + '`');
@@ -128,7 +128,7 @@ export default class TelegramBot {
         try {
             ctx.session.messages = mommyResponse.newContextMessages.slice();
             await this.#reply(ctx, 'Ваш запрос: `' + mommyResponse.lastUserMessageText + '`');
-            await this.#replyWithSaveButton(ctx, mommyResponse.completionResponse.content);
+            this.#replyWithSaveButton(ctx, mommyResponse.completionResponse.content);
         } catch (e) {
             Logger.error(e, `Error while proccessing voice message`);
             this.#reply(ctx, 'Ошибка при обработке голосового сообщения. `', e.message + '`');
@@ -149,7 +149,7 @@ export default class TelegramBot {
                     if (ctx.callbackQuery.data.startsWith('conversation')) {
                         const conversationId = ctx.callbackQuery.data.split('-')[1];
                         const conversation = await this.#conversationRepo.getConversation(conversationId.trim());
-                        await this.#reply(ctx, this.#formatConversation(conversation));
+                        this.#reply(ctx, this.#formatConversation(conversation));
                     }
                     break;
                 }
