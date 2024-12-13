@@ -47,13 +47,13 @@ export default class TelegramBot {
 
         this.#bot.command('start', ctx => this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.SWEET_GRETING_TEXT));
 
-        this.#bot.command('history', ctx => this.executeCommand(ctx, this.onHistoryCommand.bind(this)));
-
         this.#bot.on(message('text'), ctx => this.executeCommand(ctx, this.onTextMessage.bind(this)));
 
-        this.#bot.on(message('voice'), ctx => this.executeCommand(ctx, this.onVoiceMessage.bind(this)));
+        this.#bot.on(message('voice'), async ctx => await this.executeCommandAsync(ctx, this.onVoiceMessage.bind(this)));
 
-        this.#bot.on('callback_query', ctx => this.executeCommand(ctx, this.onCallbackQuery.bind(this)));
+        this.#bot.command('history', async ctx => await this.executeCommandAsync(ctx, this.onHistoryCommand.bind(this)));
+
+        this.#bot.on('callback_query', async ctx => await this.executeCommandAsync(ctx, this.onCallbackQuery.bind(this)));
     }
 
     start() {
@@ -69,6 +69,20 @@ export default class TelegramBot {
             this.#allowedUserNames === 'any'
         ) {
             commandHandler(ctx, params);
+        } else {
+            Logger.warn(dataObj, 'Received message from unknown user...');
+        }
+    }
+
+    async executeCommandAsync(ctx, commandHandler, params) {
+        const dataObj = typeof ctx?.callbackQuery === 'object' && ctx?.callbackQuery !== null ? ctx?.callbackQuery : ctx?.message;
+        if (
+            this.#allowedUsersIds?.includes(dataObj?.from?.id?.toString()) ||
+            this.#allowedUserNames?.includes(dataObj?.from?.username?.toString()) ||
+            this.#allowedUsersIds === 'any' ||
+            this.#allowedUserNames === 'any'
+        ) {
+            await commandHandler(ctx, params);
         } else {
             Logger.warn(dataObj, 'Received message from unknown user...');
         }
