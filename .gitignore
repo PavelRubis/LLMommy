@@ -1,7 +1,6 @@
 node_modules
 build
 .vscode
-src/Infrastructure/Utils/voices
 package-lock.json
 config/production.json
 logs/execution.json
