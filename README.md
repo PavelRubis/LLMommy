@@ -64,7 +64,7 @@
 
 10. Run docker compose command to start:
 ``` bash
-docker compose -f "docker-compose-local.yml" up -d --build
+sudo docker compose -f "docker-compose-local.yml" up -d --build
 ```
 ---
 
@@ -97,5 +97,5 @@ docker compose -f "docker-compose-local.yml" up -d --build
 
 9. Run docker compose command to start:
 ``` bash
-docker compose -f "docker-compose-remote.yml" up -d --build
+sudo docker compose -f "docker-compose-remote.yml" up -d --build
 ```
