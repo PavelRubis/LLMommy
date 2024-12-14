@@ -47,11 +47,11 @@ export default class TelegramBot {
 
         this.#bot.command('start', ctx => this.executeCommand(ctx, this.onStart.bind(this), TelegramBot.SWEET_GRETING_TEXT));
 
+        this.#bot.command('history', async ctx => await this.executeCommandAsync(ctx, this.onHistoryCommand.bind(this)));
+
         this.#bot.on(message('text'), ctx => this.executeCommand(ctx, this.onTextMessage.bind(this)));
 
         this.#bot.on(message('voice'), async ctx => await this.executeCommandAsync(ctx, this.onVoiceMessage.bind(this)));
-
-        this.#bot.command('history', async ctx => await this.executeCommandAsync(ctx, this.onHistoryCommand.bind(this)));
 
         this.#bot.on('callback_query', async ctx => await this.executeCommandAsync(ctx, this.onCallbackQuery.bind(this)));
     }
